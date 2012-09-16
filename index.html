@@ -1,6 +1,21 @@
 <html>
   <head>
     <title>CS 4460 homework 5</title>
+    <style>
+      #d3_container svg {
+        padding: 30px;
+      }
+
+      .axis {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .axis text {
+        font: 15px 'Arial';
+      }
+    </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
     <script src="http://d3js.org/d3.v2.js"></script>
     <script>
@@ -49,9 +64,17 @@
         var width  = 800,
             height = 500;
 
+        var x = d3.scale.linear()
+            .domain(d3.extent(path, function(d) { return d.x; }))
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .domain(d3.extent(path, function(d) { return d.y; }))
+            .range([height, 0]);
+
         var line = d3.svg.line()
-            .x(function(d){return d.x * 11})
-            .y(function(d){return d.y * 4})
+            .x(function(d){return x(d.x)})
+            .y(function(d){return y(d.y)})
             .interpolate("linear");
 
         var chart = d3.select("#temperature").append("svg:svg")
@@ -71,11 +94,29 @@
 
         dots.enter().append("svg:circle")
             .attr("r", 3)
-            .attr("cx", function(d) {return d.x * 11})
-            .attr("cy", function(d) {return d.y * 4})
+            .attr("cx", function(d) {return x(d.x)})
+            .attr("cy", function(d) {return y(d.y)})
             .style("stroke-width", 2)
             .style("stroke", "steelblue")
-            .style("fill", "#ffffff");
+            .style("fill", "#ffffff")
+            .on("mouseover", function(d) {console.log(d.y)});
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + y.range()[0] + ")")
+            .call(xAxis);
+
+        chart.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
 
 //      chart.selectAll("line")
 //          .data(y.ticks(data.length))
