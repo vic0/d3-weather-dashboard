@@ -1,0 +1,124 @@
+<html>
+  <head>
+    <title>CS 4460 homework 5</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v2.js"></script>
+    <script>
+      $(document).ready(function() {
+        var json = undefined;
+
+        $('#search').click(function(e) {
+          e.preventDefault();
+
+          var userLocation = $('#location').val();
+          var url = "http://api.wunderground.com/api/5e622022ab838954/conditions/tide/hourly10day/q/"+userLocation+".json";
+
+          $.ajax({
+            url: url,
+            dataType: "jsonp",
+            success: function(weatherData) {
+              console.log(weatherData);
+              temperature(weatherData);
+            }
+          });
+        });
+      });
+
+      function extract(json, key, amount, secondary_key) {
+        var data = []
+        for (i=0; i<amount; i++) {
+          if (secondary_key) {
+            data[i] = json.hourly_forecast[i][key][secondary_key]
+          } else {
+            data[i] = json.hourly_forecast[i][key]
+          }
+        }
+        return data;
+      }
+
+      function temperature(json) { 
+        var data = extract(json, 'temp', 72, 'english')
+
+        var path = [];
+        for (i=0; i<data.length; i++) {
+          path[i] = {x: i, y: data[i]};
+        }
+
+        var color = d3.scale.category20c();
+
+        var width  = 800,
+            height = 500;
+
+        var line = d3.svg.line()
+            .x(function(d){return d.x * 11})
+            .y(function(d){return d.y * 4})
+            .interpolate("linear");
+
+        var chart = d3.select("#temperature").append("svg:svg")
+            .attr("width", width)
+            .attr("height", height)
+
+        chart.append("svg:path")
+            .attr("d", line(path))
+            .style("stroke-width", 2)
+            .style("stroke", "steelblue")
+            .style("fill", "none");
+
+        var dots = chart.selectAll("circles")
+            .data(path, function(d) {return d})
+            .attr("cx", function(d) {return d.x})
+            .attr("cy", function(d) {return d.y});
+
+        dots.enter().append("svg:circle")
+            .attr("r", 3)
+            .attr("cx", function(d) {return d.x * 11})
+            .attr("cy", function(d) {return d.y * 4})
+            .style("stroke-width", 2)
+            .style("stroke", "steelblue")
+            .style("fill", "#ffffff");
+
+//      chart.selectAll("line")
+//          .data(y.ticks(data.length))
+//            .enter().append("svg:line")
+//          .attr("x1", function(d,i) {return i * 12 - 5})
+//          .attr("x2", function(d,i) {return i * 12 - 5})
+//          .attr("y1", function(d,i) {return height - 5})
+//          .attr("y2", function(d,i) {return height - 10})
+//          .attr("width", 1)
+//          .attr("fill", "#000000");
+
+//      chart.selectAll("rect")
+//        .data(data)
+//        .enter().append("svg:path")
+//        .attr("x", function(d, i) { return i * 12; })
+//        .attr("y", function(d) { return height - y(d); })
+//        .attr("height", function(d) { return y(d); })
+//        .attr("width", 10)
+//        .attr("fill", "#2d578b");
+      }
+
+      function humidity(json) {
+      }
+
+      function tide(json) {
+      }
+    </script>
+  </head>
+  <body>
+    <form>
+      <input type="text" id="location">
+      <input type="submit" id="search">
+    </form>
+
+    <div id="d3_container">
+      <div id="temperature">
+      </div>
+
+      <div id="humidity">
+      </div>
+
+      <div id="tide">
+      </div>
+    </div>
+  </body>
+</html>
