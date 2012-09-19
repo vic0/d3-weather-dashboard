@@ -1,7 +1,18 @@
 <html>
   <head>
     <title>CS 4460 homework 5</title>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
+      body {
+        width: 800px;
+        margin: 0 auto;
+      }
+
+      #location {
+        height: 30px;
+        margin-bottom: 0;
+      }
+
       #d3_container svg {
         padding: 30px;
       }
@@ -146,9 +157,10 @@
     </script>
   </head>
   <body>
+    <h1>Weather Dashboard</h1>
     <form>
-      <input type="text" id="location">
-      <input type="submit" id="search">
+      <input type="text" id="location" placeholder="Zipcode...">
+      <input type="submit" id="search" class="btn primary">
     </form>
 
     <div id="d3_container">
