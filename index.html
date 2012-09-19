@@ -110,7 +110,8 @@
             .style("stroke-width", 2)
             .style("stroke", "steelblue")
             .style("fill", "#ffffff")
-            .on("mouseover", function(d) {$('#temp_hover').html('In ' + d.x + ' hours it will be ' + d.y + 'F')});
+            .on("mouseover", function(d) {$('#temp_hover').html('In ' + d.x + ' hours it will be ' + d.y + 'F')})
+            .on("mouseout", function(){$('#temp_hover').html('&nbsp;')});
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -164,7 +165,7 @@
     </form>
 
     <div id="d3_container">
-      <p id="temp_hover"></p>
+      <p id="temp_hover">&nbsp;</p>
       <div id="temperature">
       </div>
 
