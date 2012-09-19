@@ -43,6 +43,8 @@
             url: url,
             dataType: "jsonp",
             success: function(weatherData) {
+              $('#temp_hover').html('&nbsp;');
+              $('#temperature').html('');
               console.log(weatherData);
               temperature(weatherData);
             }
@@ -165,6 +167,7 @@
     </form>
 
     <div id="d3_container">
+      <h2>Temperate Data</h2>
       <p id="temp_hover">&nbsp;</p>
       <div id="temperature">
       </div>
