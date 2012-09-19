@@ -132,6 +132,21 @@
             .attr("class", "y axis")
             .call(yAxis);
 
+        chart.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 5)
+            .text("time in hours");
+
+        chart.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("x", 0)
+            .attr("y", 15)
+            .attr("transform", "rotate(-90)")
+            .text("temperature in F");
+
 //      chart.selectAll("line")
 //          .data(y.ticks(data.length))
 //            .enter().append("svg:line")
