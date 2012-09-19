@@ -78,11 +78,11 @@
             height = 500;
 
         var x = d3.scale.linear()
-            .domain(d3.extent(path, function(d) { return d.x; }))
+            .domain([0, 72])
             .range([0, width]);
 
         var y = d3.scale.linear()
-            .domain(d3.extent(path, function(d) { return d.y; }))
+            .domain([0,100])
             .range([height, 0]);
 
         var line = d3.svg.line()
