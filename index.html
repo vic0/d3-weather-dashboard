@@ -94,6 +94,25 @@
         return chart;
       }
 
+      function drawAxes(chart, x, y) {
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + y.range()[0] + ")")
+            .call(xAxis);
+
+        chart.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+      }
+
       function temperature(json) { 
         var data = extract(json, 'temp', 72, 'english')
 
@@ -138,22 +157,7 @@
             .on("mouseover", function(d) {$('#temp_hover').html('In ' + d.x + ' hours it will be ' + d.y + 'F')})
             .on("mouseout", function(){$('#temp_hover').html('&nbsp;')});
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-
-        chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + y.range()[0] + ")")
-            .call(xAxis);
-
-        chart.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+        drawAxes(chart, x, y);
 
         chart.append("text")
             .attr("class", "x label")
@@ -208,22 +212,7 @@
             .attr("d", area(area_data))
             .attr("fill", "steelblue");
       
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-
-        chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + y.range()[0] + ")")
-            .call(xAxis);
-
-        chart.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+        drawAxes(chart, x, y);
 
         chart.append("text")
             .attr("class", "x label")
@@ -274,26 +263,10 @@
             .attr("fill", "#2d578b")
             .on("mouseover", function(d) {$('#tide_hover').html('The tide will be ' + d.height)});
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
         y = d3.scale.linear()
             .domain([min-1,max+1])
             .range([height, 0]);
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-
-        chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + y.range()[0] + ")")
-            .call(xAxis);
-
-        chart.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+        drawAxes(chart, x, y);
 
         chart.append("text")
             .attr("class", "x label")
