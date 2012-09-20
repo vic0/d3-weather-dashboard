@@ -30,9 +30,11 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
     <script src="http://d3js.org/d3.v2.js"></script>
     <script>
-      $(document).ready(function() {
-        var json = undefined;
+      var color = d3.scale.category20c();
+      var width  = 800,
+          height = 500;
 
+      $(document).ready(function() {
         $('#search').click(function(e) {
           e.preventDefault();
 
@@ -91,11 +93,6 @@
         for (i=0; i<data.length; i++) {
           path[i] = {x: i, y: data[i]};
         }
-
-        var color = d3.scale.category20c();
-
-        var width  = 800,
-            height = 500;
 
         var x = d3.scale.linear()
             .domain([0, 72])
@@ -176,11 +173,6 @@
           area_data[i] = {hour: i, humidity: data[i]};
         }
 
-        var color = d3.scale.category20c();
-
-        var width  = 800,
-            height = 500;
-
         var x = d3.scale.linear()
             .domain([0,72])
             .range([0, width]);
@@ -257,11 +249,6 @@
           if (data[i] < min) {min = data[i]}
           if (data[i] > max) {max = data[i]}
         }
-
-        var color = d3.scale.category20c();
-
-        var width  = 800,
-            height = 500;
 
         var x = d3.scale.linear()
             .domain([0, 72])
