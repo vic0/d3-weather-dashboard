@@ -113,6 +113,23 @@
             .call(yAxis);
       }
 
+      function drawLabels(chart, x_label, y_label) {
+        chart.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 5)
+            .text(x_label);
+
+        chart.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("x", 0)
+            .attr("y", 15)
+            .attr("transform", "rotate(-90)")
+            .text(y_label);
+      }
+
       function temperature(json) { 
         var data = extract(json, 'temp', 72, 'english')
 
@@ -158,21 +175,7 @@
             .on("mouseout", function(){$('#temp_hover').html('&nbsp;')});
 
         drawAxes(chart, x, y);
-
-        chart.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 5)
-            .text("time in hours");
-
-        chart.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("x", 0)
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .text("temperature in F");
+        drawLabels(chart, "time in hours", "temperature in F");
       }
 
       function humidity(json) {
@@ -213,22 +216,7 @@
             .attr("fill", "steelblue");
       
         drawAxes(chart, x, y);
-
-        chart.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 5)
-            .text("time in hours");
-
-        chart.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("x", 0)
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .text("humidity %");
-
+        drawLabels(chart, "time in hours", "humidity %");
       }
 
       function tide(json) {
@@ -266,23 +254,9 @@
         y = d3.scale.linear()
             .domain([min-1,max+1])
             .range([height, 0]);
+
         drawAxes(chart, x, y);
-
-        chart.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 5)
-            .text("time in hours");
-
-        chart.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("x", 0)
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .text("tide height");
-
+        drawLabels(chart, "time in hours", "tide height");
       }
     </script>
   </head>
