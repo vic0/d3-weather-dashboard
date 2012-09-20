@@ -51,6 +51,16 @@
               humidity(weatherData);
             }
           });
+
+          url = "http://api.wunderground.com/api/5e622022ab838954/rawtide/q/"+userLocation+".json"
+          $.ajax({
+            url: url,
+            dataType: "jsonp",
+            success: function(tideData) {
+              console.log(tideData);
+              tide(tideData);
+            }
+          });
         });
       });
 
@@ -62,6 +72,14 @@
           } else {
             data[i] = json.hourly_forecast[i][key]
           }
+        }
+        return data;
+      }
+
+      function extractTide(json, amount) {
+        var data = []
+        for (i=0; i<amount; i++) {
+          data[i] = json.rawtide.rawTideObs[i].height;
         }
         return data;
       }
