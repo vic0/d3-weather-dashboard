@@ -250,6 +250,11 @@
 
       /* function to draw thw d3 bar graph for tides */
       function tide(json) {
+        if (json.rawtide.rawTideObs.length == 0) {
+          $('#tide').html('Tide data is not available for this location');
+          return;
+        }
+
         var data = extractTide(json, 72);
 
         // create a hash of hour/height key/values
