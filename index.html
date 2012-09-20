@@ -30,6 +30,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
     <script src="http://d3js.org/d3.v2.js"></script>
     <script>
+      // Global variables used everywhere
       var color = d3.scale.category20c();
       var width  = 800,
           height = 500;
@@ -41,31 +42,45 @@
           var userLocation = $('#location').val();
           var url = "http://api.wunderground.com/api/5e622022ab838954/conditions/tide/hourly10day/q/"+userLocation+".json";
 
+          // API request to wunderground 10 day weather forecast
           $.ajax({
             url: url,
             dataType: "jsonp",
             success: function(weatherData) {
+              // Clear out any previous data
               $('#temp_hover').html('&nbsp;');
               $('#temperature').html('');
               $('#humidity').html('');
-              console.log(weatherData);
+
+              // Call the d3 drawing functions
               temperature(weatherData);
               humidity(weatherData);
             }
           });
 
+          // API requestion to wunderground tide data
           url = "http://api.wunderground.com/api/5e622022ab838954/rawtide/q/"+userLocation+".json"
           $.ajax({
             url: url,
             dataType: "jsonp",
             success: function(tideData) {
-              console.log(tideData);
+              // Clear our previous tide data
+              $('#tide_hover').html('&nbsp;');
+              $('#tide').html('')
+
+              // Draw tide visual
               tide(tideData);
             }
           });
         });
       });
 
+      /* Function to extract out data from the 10 day forecast. 
+         - key specifies the data
+         - amount specifies how many hours to pull 
+         - secondary key is necessary for data that's either english or metric
+         returns: an array of the specified data
+      */ 
       function extract(json, key, amount, secondary_key) {
         var data = []
         for (i=0; i<amount; i++) {
@@ -78,6 +93,10 @@
         return data;
       }
 
+      /* Function to extract out data from the 10 day forecast. 
+         - amount specifies how many hours to pull
+         returns: an array of tide height over the next specified hours
+      */ 
       function extractTide(json, amount) {
         var data = []
         for (i=0; i<amount; i++) {
@@ -86,6 +105,7 @@
         return data;
       }
 
+      /* Gets the chart based on the id provided */
       function getChart(id) {
         var chart = d3.select(id).append("svg:svg")
             .attr("width", width)
@@ -94,6 +114,7 @@
         return chart;
       }
 
+      /* Draws axes for the chart provided using the x and y scales provided */
       function drawAxes(chart, x, y) {
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -113,6 +134,7 @@
             .call(yAxis);
       }
 
+      /* Draws labels for the chart's axes */
       function drawLabels(chart, x_label, y_label) {
         chart.append("text")
             .attr("class", "x label")
@@ -130,22 +152,27 @@
             .text(y_label);
       }
 
+      /* Draws the d3 graph for temperature */
       function temperature(json) { 
         var data = extract(json, 'temp', 72, 'english')
 
+        // create a hash of x, y points for the data
         var path = [];
         for (i=0; i<data.length; i++) {
           path[i] = {x: i, y: data[i]};
         }
 
+        // x scale goes from 0 hours to 72
         var x = d3.scale.linear()
             .domain([0, 72])
             .range([0, width]);
 
+        // temp scale assumes temp will be betwen 0 to 100
         var y = d3.scale.linear()
             .domain([0,100])
             .range([height, 0]);
 
+        // creates a line generator
         var line = d3.svg.line()
             .x(function(d){return x(d.x)})
             .y(function(d){return y(d.y)})
@@ -153,17 +180,21 @@
 
         var chart = getChart("#temperature");
 
+        // draws the temperature line on the chart
         chart.append("svg:path")
             .attr("d", line(path))
             .style("stroke-width", 2)
             .style("stroke", "steelblue")
             .style("fill", "none");
 
+        // preps the chart for circles located on the x, y points of temperature
         var dots = chart.selectAll("circles")
             .data(path, function(d) {return d})
             .attr("cx", function(d) {return d.x})
             .attr("cy", function(d) {return d.y});
 
+        // draws circles over the changes in lines
+        // sets mouseover event that displays the temperature x hours from now
         dots.enter().append("svg:circle")
             .attr("r", 3)
             .attr("cx", function(d) {return x(d.x)})
@@ -178,38 +209,36 @@
         drawLabels(chart, "time in hours", "temperature in F");
       }
 
+      /* function to draw the d3 area graph for humidity */
       function humidity(json) {
         var data = extract(json, 'humidity', 72)
 
+        // creates a hash  of hour/humidity key/values
         var area_data = [];
         for (i=0; i<data.length; i++) {
           area_data[i] = {hour: i, humidity: data[i]};
         }
 
+        // x scale
         var x = d3.scale.linear()
             .domain([0,72])
             .range([0, width]);
 
+        // scale for humidity that goes from 0% to 100%
         var y = d3.scale.linear()
             .domain([0,100])
             .range([height, 0]);
 
-        // An area generator, for the light fill.
+        // area generator for humidity
         var area = d3.svg.area()
             .interpolate("monotone")
             .x(function(d) { return x(d.hour); })
             .y0(height)
             .y1(function(d) { return y(d.humidity); });
 
-        // A line generator, for the dark stroke.
-        var line = d3.svg.line()
-            .interpolate("monotone")
-            .x(function(d) { return x(d.hour); })
-            .y(function(d) { return y(d.humidity); });
-
         var chart = getChart("#humidity");
 
-        // Add the area path elements. Note: the y-domain is set per element.
+        // draw the area graph on the chart
         chart.append("svg:path")
             .attr("class", "area")
             .attr("d", area(area_data))
@@ -219,9 +248,12 @@
         drawLabels(chart, "time in hours", "humidity %");
       }
 
+      /* function to draw thw d3 bar graph for tides */
       function tide(json) {
         var data = extractTide(json, 72);
 
+        // create a hash of hour/height key/values
+        // get the min/max tide height for the data
         var tide_data = [];
         var min = data[0];
         var max = data[1];
@@ -231,16 +263,20 @@
           if (data[i] > max) {max = data[i]}
         }
 
+        // x scale
         var x = d3.scale.linear()
             .domain([0, 72])
             .range([0, width]);
 
+        // tide height scale, goes from min - 1 to max + 1
         var y = d3.scale.linear()
             .domain([max+1,min-1])
             .range([height, 0]);
 
         var chart = getChart("#tide");
 
+        // draw the rectangles
+        // set the mouseover event to display the tide height at the specified hour
         chart.selectAll("rect")
             .data(tide_data)
             .enter().append("svg:rect")
@@ -251,6 +287,7 @@
             .attr("fill", "#2d578b")
             .on("mouseover", function(d) {$('#tide_hover').html('The tide will be ' + d.height)});
 
+        // for some reason i needed to flip the domain here for the axes to get drawn correctly
         y = d3.scale.linear()
             .domain([min-1,max+1])
             .range([height, 0]);
